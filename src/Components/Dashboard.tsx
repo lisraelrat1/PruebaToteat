@@ -14,7 +14,6 @@ import AreaChartApi from "./AreaChart";
 import BarChartApi from "./BarChart";
 import BestSellers from "./BestSellers";
 
-// const baseURL = "https://storage.googleapis.com/backupdatadev/ejercicio/ventas.json";
 
 type Product = {
     category: string;
@@ -61,6 +60,11 @@ function getAverageSpent(arr: any[]){
     return ~~(spent/customers)
 }
 
+function getAllSales(arr: any[]){
+    const sales = arr.reduce((total, next) => total + next.total, 0);
+    return ~~(sales)
+}
+
 function reduceArray(arr: any[], name: string, value: string){
     const result = Array.from(arr.reduce(
         (m, item) => m.set(item[name], (m.get(item[name]) || 0) + item[value]), new Map
@@ -70,15 +74,9 @@ function reduceArray(arr: any[], name: string, value: string){
 }
 
 function reduceArrayMultiply(arr: any[], name: string, value: string, value2: string){
-    const result = arr.reduce((n, item) => n + item[value]*item[value2], 0)
-
-    // const result = arr.reduce(
-    //     (m, item) => m.set(item[name], (m.get(item[name]) || 0) + (item[value]*item[value2])), new Map
-    // )
-
-    // const result = Array.from(arr.reduce(
-    //     (m, item) => m.set(item[name], (m.get(item[name]) || 0) + (item[value]*item[value2])), new Map
-    //   ), ([name, value]) => ({name, value}));
+    const result = Array.from(arr.reduce(
+        (m, item) => m.set(item[name], (m.get(item[name]) || 0) + (item[value]*item[value2])), new Map
+      ), ([name, sales]) => ({name, sales}));
 
     return result;
 }
@@ -93,17 +91,25 @@ function monthlySalesFunc(arr: any[]) {
 
 function getBestSellers(arr: any[]){
     const products: any[] = []
+    
     arr.forEach(function (sale: Sale) {
         products.push(...sale.products)
     });
 
     const result = reduceArrayMultiply(products, 'name', 'price', 'quantity');
-    const result2 = reduceArray(products, 'name', 'price')
-    const result3 = reduceArray(products, 'name', 'quantity')
-    console.log(result, result2, result3);
+    const units = reduceArray(products, 'name','quantity');
+    const bestSellersArray = result.map(t1 => ({...t1, ...units.find(t2 => t2.name === t1.name)}));
 
-    // const result2 = reduceArray(products, 'category', 'price')
-    // console.log(result2)
+    console.log(result, units, bestSellersArray);
+
+    bestSellersArray.sort((a, b) => {
+        return b.sales - a.sales;
+    });
+
+    const bestSellers = bestSellersArray.slice(0, 5);
+    
+    return bestSellers;
+
 }
 
 function getPaymentTypes(arr: any[]){
@@ -120,13 +126,13 @@ export default function Dashboard(){
     const [monthlySales, setMonthlySales] = useState<any[]>([]);
     const [salesByPayType, setSalesByPayType] = useState<any[]>([]);
     const [salesByWaiters, setSalesByWaiters] = useState<any[]>([]);
+    const [bestSellers, setBestSellers] = useState<any[]>([]);
+
     const [averageServiceTime, setAverageServiceTime] = useState<number>(0);
     const [averageSpent, setAverageSpent] = useState<number>(0);
+    const [allSales, setAllSales] = useState<number>(0);
 
-    sortArrayByDate(data);
-    getBestSellers(data);
-    // reduceArrayMultiply(data, 'name', 'quantity', 'price');
-    
+    sortArrayByDate(data);    
 
     const setdataValues = async () => {
         const monthlySalesData = monthlySalesFunc(data);
@@ -144,6 +150,11 @@ export default function Dashboard(){
         const payments = getPaymentTypes(data);
         setSalesByPayType(payments);
 
+        const bestSellersProducts = getBestSellers(data);
+        setBestSellers(bestSellersProducts);
+
+        const sales = getAllSales(data);
+        setAllSales(sales);
 
     }
 
@@ -156,13 +167,6 @@ export default function Dashboard(){
         <Navbar bg="light" variant="light">
             <Container>
             <Navbar.Brand href="#home">
-                <img
-                alt=""
-                src="/toteat.png"
-                width="30"
-                height="30"
-                className="d-inline-block align-top mx-2"
-                />{' '}
                 Prueba Técnica Toteat
             </Navbar.Brand>
             </Container>
@@ -177,7 +181,7 @@ export default function Dashboard(){
                     <AnalyticsCard measure="Promedio de Compra por Comensal" value={averageSpent} unit={'CLP'}></AnalyticsCard>
                 </Col>
                 <Col sm={4}>
-                    <AnalyticsCard measure="Ventas Totales" value={400} unit={'$'}></AnalyticsCard>
+                    <AnalyticsCard measure="Ventas Totales del Periodo" value={allSales} unit={'CLP'}></AnalyticsCard>
                 </Col>
             </Row>
             <Row className='mt-2'>
@@ -185,10 +189,7 @@ export default function Dashboard(){
                     <BarChartApi title="Venta por Meseros" data={salesByWaiters}/>
                 </Col>
                 <Col sm={4}>
-                    <BestSellers title="Best Sellers" data={[
-                                                                { name: 'Coca-cola', units: 400 , sales: 23823},
-                                                             
-                    ]}/>
+                    <BestSellers title="Best Sellers (por ventas en CLP)" data={bestSellers}/>
                 </Col>             
             </Row>
              <Row className='mt-3'>

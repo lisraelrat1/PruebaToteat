@@ -4,7 +4,8 @@ import {
   XAxis,
   YAxis,
   Tooltip,
-  ResponsiveContainer
+  ResponsiveContainer,
+  LabelList
 } from "recharts";
 import Card from 'react-bootstrap/Card';
 
@@ -27,21 +28,28 @@ export default function BarChartApi({title, data}: BarChartProps){
   return (
     <Card style = {customCard}>
     <h3 className="mb-5"> {title} </h3>
-    <ResponsiveContainer width="100%" aspect={3}>
+    <ResponsiveContainer width="100%" aspect={2}>
       <BarChart
       data={data}
       margin={{
-        top: 5,
+        top: 30,
         right: 10,
-        left: 20,
+        left: 50,
         bottom: 5
       }}
      >
-        <XAxis dataKey="name" />
-        <YAxis />
-        <Tooltip />
+        <XAxis tick={false}/>
+        <YAxis tickFormatter={(value: any) => new Intl.NumberFormat('en').format(value)} />
+        <Tooltip formatter={(value: any) => new Intl.NumberFormat('en').format(value)} />
 
         <Bar dataKey="value" fill="#00C49F">
+          <LabelList
+            dataKey="name"
+            position="top"
+            angle={0}
+            offset={10}
+            fill="white"
+          />
         </Bar>
 
     </BarChart>

@@ -21,7 +21,7 @@ export default function AreaChartApi({title, data}: AreaChartProps){
     const customCard = {
       color: "white",
       backgroundColor: "#212121",
-      padding: "30px",
+      padding: "25px",
       borderRadius: "1rem",
       display: "flex",
       justifyContent: "space-evenly",
@@ -30,14 +30,14 @@ export default function AreaChartApi({title, data}: AreaChartProps){
     return (
     <Card style = {customCard}>
       <h3 className="mb-5"> {title} </h3>
-      <ResponsiveContainer width="100%" aspect={2}>
+      <ResponsiveContainer width="100%" aspect={2.2}>
          <AreaChart
          width={400}
          height={400}
          data={data}
          margin={{ top: 0, left: 0, right: 0, bottom: 0 }}
        >
-         <Tooltip cursor={false} />
+         <Tooltip/>
          <Area
            type="monotone"
            dataKey="total"
@@ -46,8 +46,8 @@ export default function AreaChartApi({title, data}: AreaChartProps){
            strokeWidth={4}
          />
           <XAxis dataKey="date_opened" />
-          <YAxis/>
-          <Tooltip />
+          <YAxis tickFormatter={(value: any) => new Intl.NumberFormat('en').format(value)}/>
+          <Tooltip  formatter={(value: any) => new Intl.NumberFormat('en').format(value)}/>
        </AreaChart>
       </ResponsiveContainer>
     </Card> 

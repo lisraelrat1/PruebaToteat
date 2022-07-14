@@ -31,7 +31,7 @@ export default function AnalyticsCard({measure, value, unit}: CardProps){
             >
                 <Card.Body>
                     <Card.Text> {measure} </Card.Text>
-                    <Card.Title> {value} {unit} </Card.Title>
+                    <Card.Title> {value.toLocaleString( 'de-DE' )} {unit} </Card.Title>
                 </Card.Body>
             </Card>
         </>

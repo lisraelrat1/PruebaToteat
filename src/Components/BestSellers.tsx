@@ -19,12 +19,12 @@ export default function BestSellers({title, data}: BestSellersProps){
     return (
       <Card style={customCard}>
         <h3 className="mb-3"> {title} </h3>
-        <Table hover variant="dark" style={{backgroundColor:"rgba(255, 255, 255, 0.25)"}}>
+        <Table style={{fontSize:"15px", color:"white"}}>
         <thead>
           <tr>
-            <th>#</th>
+            <th></th>
             <th>Producto</th>
-            <th>Unidades Ventidas</th>
+            <th>Unidades Vendidas</th>
             <th>Ventas en CLP</th>
           </tr>
         </thead>
@@ -32,10 +32,10 @@ export default function BestSellers({title, data}: BestSellersProps){
             {data.map(function(d, idx){
                 return (
                     <tr>
-                    <td>{idx + 1}</td>
+                    <td>{idx + 1}.</td>
                     <td>{d.name}</td>
-                    <td>{d.units}</td>
-                    <td>${d.sales}</td>
+                    <td>{d.value.toLocaleString( 'de-DE' )}</td>
+                    <td>${d.sales.toLocaleString( 'de-DE' )}</td>
                 </tr>
                 )
             })}

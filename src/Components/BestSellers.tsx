@@ -19,7 +19,7 @@ export default function BestSellers({title, data}: BestSellersProps){
     return (
       <Card style={customCard}>
         <h3 className="mb-3"> {title} </h3>
-        <Table style={{fontSize:"15px", color:"white"}}>
+        <Table responsive style={{fontSize:"15px", color:"white"}}>
         <thead>
           <tr>
             <th></th>
